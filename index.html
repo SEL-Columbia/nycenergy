@@ -1,45 +1,56 @@
 <html>
-  <head>
+<head>
+    <title>Estimated Total Annual Building Energy Consumption at the Block and Lot Level for New York City</title>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.css' rel='stylesheet' />
     <link href='main.css' rel='stylesheet' type='text/css' />
-    <link href='map.css' rel='stylesheet' type='text/css' />
-	<script type="text/javascript">
-
-	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', 'UA-83697-16']);
-	  _gaq.push(['_trackPageview']);
-
-	  (function() {
-	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-	  })();
-
-	</script>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-	<title>Estimated Total Annual Building Energy Consumption at the Block and Lot Level for New York City</title>
-  </head>
+    <link href='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.2/leaflet.fullscreen.css' rel='stylesheet' />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js'></script>
+    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.2/Leaflet.fullscreen.min.js'></script>
+</head>
 <body>
-<div id="content-wrap">
-	<h2>Estimated Total Annual Building Energy Consumption at the Block and Lot Level for NYC</h2>
-	<div align="right"> <a href="about.html">About</a> | Map<br/></div>
-
-	<iframe width='100%' height='500px' frameBorder='0' src='https://a.tiles.mapbox.com/v4/modilabs.map-wnigdvsl/attribution,zoompan,zoomwheel,geocoder,share.html?access_token=pk.eyJ1IjoibW9kaWxhYnMiLCJhIjoiblpwWWp3WSJ9.8aue5bTnQJ_-_91XbBGLcg'></iframe>
-	<p id="data-source">
-		Map Prepared By: Shaky Sherpa <br>
-		Data Source: <a href="http://www.sciencedirect.com/science/article/pii/S037877881100524X">Spatial distribution of urban building energy consumption by end use</a>
-	<br>B. Howard, L. Parshall, J. Thompson, S. Hammer, J. Dickinson, V. Modi
-	</p>
-
-	<div id="map-description" align="justify">	
-	The map represents an estimate of the total annual building energy consumption at the block level and at the tax lot level for New York City, and is expressed in kilowatt hours (kWh) per square meter of land area. A mathematical model based on statistics, not individual building data, was used to estimate the annual energy consumption values for buildings throughout the five boroughs. To see the percentage break down of the estimated end-uses, hover over or click on a block or tax lot. The tax lot level data shows how much energy an average building of that size and type would use.
-	</div>	
-
-	<p id="credits">
-	<i>Map created by the <a href="http://sel.columbia.edu">Sustainable Engineering Lab (formerly Modi Research Group)</a> using <a href="http://mapbox.com">MapBox</a></i>
-    </p>
-</div>
-
-<br>
-
+	<div id="map"></div>
+    
+    <div id="content-wrap">
+        <h1>Estimated Total Annual Building Energy Consumption at the Block and Lot Level for NYC</h1>
+        
+        <div class="nav">
+            <a href="about.html">About</a> | Map
+        </div>
+        
+    	<div id="map-description" align="justify">	
+    	The map represents an estimate of the total annual building energy consumption at the block level and at the tax lot level for New York City, and is expressed in kilowatt hours (kWh) per square meter of land area. A mathematical model based on statistics, not individual building data, was used to estimate the annual energy consumption values for buildings throughout the five boroughs. To see the percentage break down of the estimated end-uses, hover over or click on a block or tax lot. The tax lot level data shows how much energy an average building of that size and type would use.
+    	</div>	
+        
+        <div id="data-source">
+            Map Prepared By: Shaky Sherpa <br>
+            Map created by the <a href="http://sel.columbia.edu">Sustainable Engineering Lab (formerly Modi Research Group)</a> using <a href="http://mapbox.com">MapBox</a></i><br>
+            Data Source: <a href="http://www.sciencedirect.com/science/article/pii/S037877881100524X">Spatial distribution of urban building energy consumption by end use</a>
+            <br>B. Howard, L. Parshall, J. Thompson, S. Hammer, J. Dickinson, V. Modi
+        </div>
+    </div>
+    
+    <script>
+        L.mapbox.accessToken = 'pk.eyJ1IjoibW9kaWxhYnMiLCJhIjoiblpwWWp3WSJ9.8aue5bTnQJ_-_91XbBGLcg';
+        var map = L.mapbox.map('map', 'modilabs.map-wnigdvsl', {
+            center: [40.809421, -73.960070],
+            zoom: 14,
+            minZoom: 13,
+            maxZoom: 17,
+            touchZoom: false,
+            scrollWheelZoom: false,
+            fullscreenControl: true
+        });
+    </script>
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-83697-16']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
 </body>
 </html>
