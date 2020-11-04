@@ -250,20 +250,6 @@ sup { vertical-align: text-top; }
   z-index: 100;
 }
 
-/* .legend-key {
-  position: absolute;
-  font-family: sans-serif;
-  top: 300px;
-  right: 5px;
-  padding: 5px;
-  width: 30%;
-  border: 2px solid black;
-  font-size: 14px;
-  color: #222;
-  background-color: #fff;
-  border-radius: 3px;
-} */
-
 /**
 * Set rules for how the map overlays
 * (information box and legend) will be displayed
