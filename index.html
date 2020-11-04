@@ -1,55 +1,340 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Estimated Total Annual Building Energy Consumption at the Block and Lot Level for New York City</title>
-    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.css' rel='stylesheet' />
-    <link href='main.css' rel='stylesheet' type='text/css' />
-    <link href='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.2/leaflet.fullscreen.css' rel='stylesheet' />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js'></script>
-    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v0.0.2/Leaflet.fullscreen.min.js'></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>Estimated Total Annual Building Energy Consumption at the Block and Lot Level for New York City</title>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+  <link href='main.css' rel='stylesheet' type='text/css' />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
-	<div id="map"></div>
-    
-    <div id="content-wrap">
-        <h1>Estimated Total Annual Building Energy Consumption at the Block and Lot Level for NYC</h1>
-        
-        <div class="nav">
-            <a href="about.html">About</a> | Map
-        </div>
-        
-    	<div id="map-description" align="justify">	
-    	The map represents an estimate of the total annual building energy consumption at the block level and at the tax lot level for New York City, and is expressed in kilowatt hours (kWh) per square meter of land area. A mathematical model based on statistics, not individual building data, was used to estimate the annual energy consumption values for buildings throughout the five boroughs. To see the percentage break down of the estimated end-uses, hover over or click on a block or tax lot. The tax lot level data shows how much energy an average building of that size and type would use.
-    	</div>	
-        
-        <div id="data-source">
-            Map created by Shaky Sherpa of <a href="http://sel.columbia.edu">Sustainable Engineering Lab (formerly Modi Research Group)</a> <br>
-            Data Source: <a href="http://www.sciencedirect.com/science/article/pii/S037877881100524X">Spatial distribution of urban building energy consumption by end use</a>
-            <br>B. Howard, L. Parshall, J. Thompson, S. Hammer, J. Dickinson, V. Modi
-        </div>
+  <div id="map">
+    <div class='EnergyInfo'>
+      <div id='EnergyLot' style="display: none;">
+        <center><b>Estimated Lot Level Annual Energy Consumption</b></center>
+        <hr>
+        &gt;&gt; <b>Hover Over Lot For Data</b><br><br>
+        Lot Address: <span id='lot_addr'></span><br>
+        Lot Land Area: <span id='lot_area'></span> m<sup>2</sup><br>
+        Building Floor Area: <span id='fl_area'></span> m<sup>2</sup><br>
+        Lot Electricity Use: <span id='lot_elec'></span> (10<sup>3</sup>) kWh<br>
+        Lot Total Fuel Use: <span id='tot_fuel'></span> Therms<br>
+        Total Energy Use Per m<sup>2</sup>: <span id='lot_energy_m2'></span> kWh<br>
+        <font color="gray">
+          (1 m<sup>2</sup> = 10.76 ft<sup>2</sup> and 1 Therm = 29.30 kWh)
+        </font><br><br>
+        <hr>
+        &gt;&gt; <b>Click to Update Pie Chart, Marker Indicates</b>
+        <div id="lotpiechart" style="width: 360px; height: 200px;"></div>
+      </div>
+      <div id='EnergyBlock' style="display: block;">
+        <center><b>Estimated Block Level Annual Energy Consumption</b></center>
+        <hr>
+        &gt;&gt; <b>Hover Over Block For Data</b><br><br>
+        Block ID: <span id='block_id'></span><br>
+        Land Area: <span id='land_area'></span> m<sup>2</sup><br>
+        Electricity Use: <span id='elec_use'></span> (10<sup>3</sup>) kWh<br>
+        Block Fuel Use: <span id='fuel_use'></span> Therms<br>
+        Total Energy Use Per m<sup>2</sup>: <span id='block_energy_m2'></span> kWh<br>
+        <font color="gray">
+          (1 m<sup>2</sup> = 10.76 ft<sup>2</sup> and 1 Therm = 29.30 kWh)
+        </font><br><br>
+        <hr>
+        &gt;&gt; <b>Click to Update Pie Chart, Marker Indicates</b>
+        <div id="blockpiechart" style="width: 360px;"></div>
+      </div>
     </div>
-    
-    <script>
-        L.mapbox.accessToken = 'pk.eyJ1IjoibW9kaWxhYnMiLCJhIjoiblpwWWp3WSJ9.8aue5bTnQJ_-_91XbBGLcg';
-        var map = L.mapbox.map('map', 'modilabs.map-wnigdvsl', {
-            center: [40.7351612118096,-73.8631439208984],
-            zoom: 13,
-            minZoom: 13,
-            maxZoom: 17,
-            touchZoom: false,
-            scrollWheelZoom: false,
-            fullscreenControl: true
+    <div class='map-overlay' id='legend'>
+      <b>Estimated Annual Energy</b><br>
+      (kWh per m<sup>2</sup>)<hr>
+    </div>
+  </div>
+  <div id="content-wrap">
+      <h1>Estimated Total Annual Building Energy Consumption at the Block and Lot Level for NYC</h1>
+
+      <div class="nav">
+          <a href="about.html">About</a> | Map
+      </div>
+
+      <div id="map-description" align="justify">
+          The map represents an estimate of the total annual building energy consumption at the block level and at the tax lot level for New York City, and is expressed in kilowatt hours (kWh) per square meter of land area. A mathematical model based on statistics, not individual building data, was used to estimate the annual energy consumption values for buildings throughout the five boroughs. To see the percentage break down of the estimated end-uses, hover over or click on a block or tax lot. The tax lot level data shows how much energy an average building of that size and type would use.
+      </div>
+
+      <div id="data-source">
+          Map created by Shaky Sherpa of <a href="http://sel.columbia.edu">Sustainable Engineering Lab (formerly Modi Research Group)</a> <br>
+          Data Source: <a href="http://www.sciencedirect.com/science/article/pii/S037877881100524X">Spatial distribution of urban building energy consumption by end use</a>
+          <br>B. Howard, L. Parshall, J. Thompson, S. Hammer, J. Dickinson, V. Modi
+      </div>
+  </div>
+
+  <script>
+
+    // TODO: get/add all borough data
+    // TODO: fix keyboard handler rotation, https://github.com/mapbox/mapbox-gl-js/issues/3768
+
+    mapboxgl.accessToken = 'pk.eyJ1IjoibW9kaWxhYnMiLCJhIjoiblpwWWp3WSJ9.8aue5bTnQJ_-_91XbBGLcg';
+    var map = new mapboxgl.Map({
+      container: 'map',  // container id
+      style: 'mapbox://styles/modilabs/ckgra5eee026319l6jqpawdky',  //stylesheet location
+      center: [-73.8631439208984, 40.7351612118096],  // starting position
+      pitch: 0,  // desired pitch in degrees
+      zoom: 12,  // starting zoom
+      minZoom: 12,  // minimum zoom level of the map (0-24)
+      maxZoom: 18,  // maximum zoom level of the map (0-24)
+      // scrollZoom: false,
+      dragRotate: false,
+      pitchWithRotate: false,
+      // touchZoomRotate: false,
+      // keyboard: false,
+    });
+
+    map.touchZoomRotate.disableRotation();
+    map.keyboard.disableRotation();
+
+    map.addControl(new mapboxgl.NavigationControl({
+      showZoom: true,
+      showCompass: false,
+      visualizePitch: false,
+    }), 'top-left');
+
+    map.addControl(new mapboxgl.FullscreenControl(), 'top-left');
+
+    var marker = new mapboxgl.Marker()
+
+    // zoom level that blocks transition to lots
+    var transition_zoom = 15;
+
+    // Target the relevant tags to fill in EnergyInfo etc.
+    var lotEnergyM2 = document.getElementById('lot_energy_m2');
+    var lotAddrDisplay = document.getElementById('lot_addr');
+    var lotAreaDisplay = document.getElementById('lot_area');
+    var flAreaDisplay = document.getElementById('fl_area');
+    var lotElecDisplay = document.getElementById('lot_elec');
+    var lotFuelDisplay = document.getElementById('tot_fuel');
+    var piLotElec, piLotCool, piLotHeat, piLotHotWat
+
+    var blockEnergyM2 = document.getElementById('block_energy_m2');
+    var blockIdDisplay = document.getElementById('block_id');
+    var landAreaDisplay = document.getElementById('land_area');
+    var elecUseDisplay = document.getElementById('elec_use');
+    var fuelUseDisplay = document.getElementById('fuel_use');
+    var piBlockElec, piBlockCool, piBlockHeat, piBlockHotWat
+
+    var energyLotDiv = document.getElementById("EnergyLot");
+    var energyBlockDiv = document.getElementById("EnergyBlock");
+
+    var energyLotLayers = ['nyc-energy-taxlot-map-batch-1-1g6cr8',
+                           'nyc-energy-taxlot-map-batch-2-4bwp9q',
+                           'nyc_energy_taxlot_map_batch_3-chidle',
+                           'nyc-energy-taxlot-map-batch-4-64z49p'];
+
+    map.on('zoom', function() {
+
+      // preference to keep over transition but more complicated so...
+      marker.remove();
+      drawChart('blank');
+
+      var zoom = map.getZoom();
+
+      if (zoom >= transition_zoom) {
+        energyLotDiv.style.display = "block";
+        energyBlockDiv.style.display = "none";
+      } else {
+        energyBlockDiv.style.display = "block";
+        energyLotDiv.style.display = "none";
+      }
+    });
+
+    map.on('load', function() {
+
+      drawChart('blank');
+
+      // add legend for colors
+      var color_layers = ['1-50', '50-75', '75-90', '90-120', '120-170', '170-200',
+                    '200-300', '300-400', '400-600', '600-900', '900-1200',
+                    '1200-1750', '1750-2500', '2500-5000', '5000+'];
+      var colors = ['#59b300', '#88cc00', '#e0f500', '#e4f500', '#edfa00',
+                    '#ffff00', '#ffe100', '#ffc800', '#ff9500', '#d65900',
+                    '#e62600', '#fa0000', '#c70000', '#940000', '#660000'];
+
+      for (i = 0; i < color_layers.length; i++) {
+        var color_layer = color_layers[i];
+        var color = colors[i];
+        var item = document.createElement('div');
+        var key = document.createElement('span');
+        key.className = 'legend-key';
+        key.style.backgroundColor = color;
+
+        var value = document.createElement('span');
+        value.innerHTML = color_layer;
+        item.appendChild(key);
+        item.appendChild(value);
+        legend.appendChild(item);
+      }
+
+    });
+
+    google.charts.load('current', {'packages':['corechart']});
+
+    function drawChart(chart_type) {
+
+      var options = {
+        title: 'Estimated Annual Energy End-Use Split %',
+        pieHole: 0.2,
+        sliceVisibilityThreshold: 0.001,
+      };
+
+      if (chart_type === 'block') {
+        var data = google.visualization.arrayToDataTable([
+          ['Source', 'kWh per m2'],
+          ['Heating', piBlockHeat],
+          ['Cooling', piBlockCool],
+          ['Electricity', piBlockElec],
+          ['Hot Water', piBlockHotWat]
+        ]);
+        var chart = new google.visualization.PieChart(document.getElementById('blockpiechart'));
+        chart.draw(data, options);
+      } else if (chart_type === 'lot') {
+        var data = google.visualization.arrayToDataTable([
+          ['Source', 'kWh per m2'],
+          ['Heating', parseInt(piLotHeat)],
+          ['Cooling', piLotCool],
+          ['Electricity', parseInt(piLotElec)],
+          ['Hot Water', piLotHotWat]
+        ]);
+        var chart = new google.visualization.PieChart(document.getElementById('lotpiechart'));
+        chart.draw(data, options);
+      } else {
+        var data = google.visualization.arrayToDataTable([
+          ['Source', 'kWh per m2'],
+          ['', 0],
+        ]);
+        var blockChart = new google.visualization.PieChart(document.getElementById('blockpiechart'));
+        var lotChart = new google.visualization.PieChart(document.getElementById('lotpiechart'));
+        blockChart.draw(data, options);
+        lotChart.draw(data, options);
+      }
+
+    }
+
+    map.on('click', function(e) {
+      var zoom = map.getZoom();
+
+      if (zoom >= transition_zoom) {
+        var energyLotBatches = []
+        for (i = 0; i < energyLotLayers.length; i++) {
+          energyLotBatches.push(map.queryRenderedFeatures(e.point, {
+            layers: [energyLotLayers[i]]
+          }));
+        }
+        marker.setLngLat([e.lngLat.wrap()['lng'], e.lngLat.wrap()['lat']]).addTo(map);
+        for (i = 0; i < energyLotBatches.length; i++) {
+          var energyLots = energyLotBatches[i]
+          if (energyLots.length > 0) {
+            lotEnergyM2.textContent = energyLots[0].properties.enerkWh_m2;
+            lotAddrDisplay.textContent = energyLots[0].properties.Address;
+            lotAreaDisplay.textContent = energyLots[0].properties.lotarea_m2;
+            flAreaDisplay.textContent = energyLots[0].properties.bldgaream2;
+            lotElecDisplay.textContent = energyLots[0].properties.allelecMWh;
+            lotFuelDisplay.textContent = energyLots[0].properties.fuel_therm;
+            piLotElec = energyLots[0].properties.per_elec;
+            piLotCool = energyLots[0].properties.per_cool;
+            piLotHeat = energyLots[0].properties.per_heat;
+            piLotHotWat = energyLots[0].properties.per_ht_wat;
+          }
+          drawChart('lot');
+        }
+      } else {
+        var energyBlocks = map.queryRenderedFeatures(e.point, {
+          layers: ['nyc-energy-blocks-new-552iq7']
         });
-    </script>
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-83697-16']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
+        marker.setLngLat([e.lngLat.wrap()['lng'], e.lngLat.wrap()['lat']]).addTo(map);
+        if (energyBlocks.length > 0) {
+          blockEnergyM2.textContent = energyBlocks[0].properties.enerkWh_m2;
+          blockIdDisplay.textContent = energyBlocks[0].properties.Block;
+          landAreaDisplay.textContent = energyBlocks[0].properties.blkarea_m2;
+          elecUseDisplay.textContent = energyBlocks[0].properties.allelecMWh;
+          fuelUseDisplay.textContent = energyBlocks[0].properties.fuel_therm;
+          piBlockElec = energyBlocks[0].properties.per_elec;
+          piBlockCool = energyBlocks[0].properties.per_cool;
+          piBlockHeat = energyBlocks[0].properties.per_heat;
+          piBlockHotWat = energyBlocks[0].properties.per_ht_wat;
+          drawChart('block');
+        }
+      }
+    });
+
+    function clearData() {
+      // Remove the information from the previously hovered feature from the sidebar
+      lotEnergyM2.textContent = '';
+      lotAddrDisplay.textContent = '';
+      lotAreaDisplay.textContent = '';
+      flAreaDisplay.textContent = '';
+      lotElecDisplay.textContent = '';
+      lotFuelDisplay.textContent = '';
+      blockEnergyM2.textContent = '';
+      blockIdDisplay.textContent = '';
+      landAreaDisplay.textContent = '';
+      elecUseDisplay.textContent = '';
+      fuelUseDisplay.textContent = '';
+      // should the pie chart be cleared when mouse is moved?
+      // piLotElec = piLotCool = piLotHeat = piLotHotWat = 0;
+      // piBlockElec = piBlockCool = piBlockHeat = piBlockHotWat = 0;
+      // drawChart('blank');
+    }
+
+    map.on('mousemove', function(e) {
+      var zoom = map.getZoom();
+      if (zoom >= transition_zoom) {
+        var energyLotBatches = []
+        for (i = 0; i < energyLotLayers.length; i++) {
+          energyLotBatches.push(map.queryRenderedFeatures(e.point, {
+            layers: [energyLotLayers[i]]
+          }));
+        }
+        var new_data = 0;
+        for (i = 0; i < energyLotBatches.length; i++) {
+          var energyLots = energyLotBatches[i]
+          if (energyLots.length > 0) {
+            new_data++;
+            lotEnergyM2.textContent = energyLots[0].properties.enerkWh_m2;
+            lotAddrDisplay.textContent = energyLots[0].properties.Address;
+            lotAreaDisplay.textContent = energyLots[0].properties.lotarea_m2;
+            flAreaDisplay.textContent = energyLots[0].properties.bldgaream2;
+            lotElecDisplay.textContent = energyLots[0].properties.allelecMWh;
+            lotFuelDisplay.textContent = energyLots[0].properties.fuel_therm;
+          }
+        }
+        if (new_data == 0) {
+          clearData();
+        }
+      } else {
+        var energyBlocks = map.queryRenderedFeatures(e.point, {
+          layers: ['nyc-energy-blocks-new-552iq7']
+        });
+        if (energyBlocks.length > 0) {
+          blockEnergyM2.textContent = energyBlocks[0].properties.enerkWh_m2;
+          blockIdDisplay.textContent = energyBlocks[0].properties.Block;
+          landAreaDisplay.textContent = energyBlocks[0].properties.blkarea_m2;
+          elecUseDisplay.textContent = energyBlocks[0].properties.allelecMWh;
+          fuelUseDisplay.textContent = energyBlocks[0].properties.fuel_therm;
+        } else {
+          clearData();
+        }
+      }
+    });
+  </script>
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-83697-16']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
 </body>
 </html>
