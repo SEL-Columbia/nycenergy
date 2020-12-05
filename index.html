@@ -3,9 +3,9 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <title>Estimated Total Annual Building Energy Consumption at the Block and Lot Level for New York City</title>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.css" rel="stylesheet" />
   <link href='main.css' rel='stylesheet' type='text/css' />
-  <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
@@ -71,7 +71,6 @@
   <script>
 
     // TODO: get/add all borough data
-    // TODO: fix keyboard handler rotation, https://github.com/mapbox/mapbox-gl-js/issues/3768
 
     mapboxgl.accessToken = 'pk.eyJ1IjoibW9kaWxhYnMiLCJhIjoiblpwWWp3WSJ9.8aue5bTnQJ_-_91XbBGLcg';
     var map = new mapboxgl.Map({
@@ -86,11 +85,10 @@
       dragRotate: false,
       pitchWithRotate: false,
       // touchZoomRotate: false,
-      keyboard: false,
     });
 
     map.touchZoomRotate.disableRotation();
-    // map.keyboard.disableRotation();
+    map.keyboard.disableRotation();
 
     map.addControl(new mapboxgl.NavigationControl({
       showZoom: true,
